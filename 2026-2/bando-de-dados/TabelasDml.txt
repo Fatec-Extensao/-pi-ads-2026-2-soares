@@ -1,0 +1,68 @@
+-- Criação das Tabelas
+CREATE TABLE Cliente (
+    codigo NUMBER PRIMARY KEY,
+    nome VARCHAR2(100) NOT NULL,
+    cidade VARCHAR2(100),
+    idade NUMBER
+);
+
+CREATE TABLE Servicos (
+    codigo NUMBER PRIMARY KEY,
+    nome VARCHAR2(100) NOT NULL,
+    valorreferencia NUMBER(10,2)
+);
+
+CREATE TABLE OrdemServico (
+    numos NUMBER PRIMARY KEY,
+    data DATE,
+    valortotal NUMBER(10,2),
+    cod_cliente NUMBER,
+    CONSTRAINT fk_os_cliente FOREIGN KEY (cod_cliente) REFERENCES Cliente(codigo)
+);
+
+CREATE TABLE ItensOrdemServico (
+    numitem NUMBER,
+    numos NUMBER,
+    codservico NUMBER,
+    valor NUMBER(10,2),
+    quantidade NUMBER,
+    PRIMARY KEY (numitem, numos),
+    CONSTRAINT fk_item_os FOREIGN KEY (numos) REFERENCES OrdemServico(numos),
+    CONSTRAINT fk_item_servico FOREIGN KEY (codservico) REFERENCES Servicos(codigo)
+);
+
+-- Inserção de Dados
+INSERT INTO Cliente (codigo, nome, cidade, idade) VALUES (1, 'João Silva', 'Lins', 35);
+INSERT INTO Cliente (codigo, nome, cidade, idade) VALUES (2, 'Maria Oliveira', 'Bauru', 28);
+INSERT INTO Cliente (codigo, nome, cidade, idade) VALUES (3, 'Carlos Santos', 'Lins', 42);
+
+INSERT INTO Servicos (codigo, nome, valorreferencia) VALUES (1, 'Formatação de PC', 150.00);
+INSERT INTO Servicos (codigo, nome, valorreferencia) VALUES (2, 'Limpeza Interna', 80.00);
+INSERT INTO Servicos (codigo, nome, valorreferencia) VALUES (3, 'Troca de Tela', 300.00);
+
+INSERT INTO OrdemServico (numos, data, valortotal, cod_cliente) VALUES (101, DATE '2023-11-01', 230.00, 1);
+INSERT INTO OrdemServico (numos, data, valortotal, cod_cliente) VALUES (102, DATE '2023-11-03', 150.00, 2);
+INSERT INTO OrdemServico (numos, data, valortotal, cod_cliente) VALUES (103, DATE '2023-11-05', 600.00, 3);
+
+INSERT INTO ItensOrdemServico VALUES (1, 101, 1, 150.00, 1);
+INSERT INTO ItensOrdemServico VALUES (2, 101, 2, 80.00, 1);
+INSERT INTO ItensOrdemServico VALUES (1, 102, 1, 150.00, 1);
+INSERT INTO ItensOrdemServico VALUES (1, 103, 3, 300.00, 2);
+
+-- Consultas
+SELECT * FROM Cliente WHERE UPPER(cidade) = 'LINS';
+
+SELECT * FROM Servicos;
+
+SELECT c.codigo AS codigocliente, c.nome AS nomecliente, o.numos, o.valortotal
+FROM Cliente c JOIN OrdemServico o ON c.codigo = o.cod_cliente;
+
+SELECT c.codigo AS codigocliente, c.nome AS nomecliente, o.numos, o.valortotal, i.numitem, i.quantidade, s.nome AS nomeservico
+FROM Cliente c JOIN OrdemServico o ON c.codigo = o.cod_cliente JOIN ItensOrdemServico i ON o.numos = i.numos JOIN Servicos s ON i.codservico = s.codigo;
+
+SELECT c.codigo AS codigocliente, c.nome AS nomecliente, o.numos, i.numitem, i.quantidade, (i.quantidade * i.valor) AS valorpago, s.nome AS nomeservico
+FROM Cliente c JOIN OrdemServico o ON c.codigo = o.cod_cliente JOIN ItensOrdemServico i ON o.numos = i.numos JOIN Servicos s ON i.codservico = s.codigo;
+
+SELECT c.codigo AS codigocliente, c.nome AS nomecliente, o.numos, i.numitem, i.quantidade, (i.quantidade * i.valor) AS valorpago, s.nome AS nomeservico
+FROM Cliente c JOIN OrdemServico o ON c.codigo = o.cod_cliente JOIN ItensOrdemServico i ON o.numos = i.numos JOIN Servicos s ON i.codservico = s.codigo
+WHERE UPPER(c.cidade) = 'LINS';
