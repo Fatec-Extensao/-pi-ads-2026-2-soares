@@ -2,6 +2,7 @@
 **2º Semestre 2026 – 2º Termo ADS | FATEC Lins**
 
 ---
+Aplicação publicada: Acessar o sistema
 
 ## 👨‍🏫 Informações do Curso e Disciplinas
 
